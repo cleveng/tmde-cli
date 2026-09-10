@@ -5,4 +5,4 @@ mod repository;
 pub use entity::{
     Account, AccountLoader, AccountQueryOneOption, AccountsQueryInput, AccountsQueryOption,
 };
-pub use repository::AccountsLoader;
+pub use repository::AccountLoader;
