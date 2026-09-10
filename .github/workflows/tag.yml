@@ -1,0 +1,105 @@
+name: Tag Builder
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Get package info
+        id: package
+        shell: bash
+        run: |
+          PACKAGE_NAME=$(cargo metadata \
+            --no-deps \
+            --format-version 1 \
+            | jq -r '.packages[0].name')
+
+          VERSION=$(cargo metadata \
+            --no-deps \
+            --format-version 1 \
+            | jq -r '.packages[0].version')
+
+          TAG="v${VERSION}"
+
+          echo "name=${PACKAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+          echo "Package : ${PACKAGE_NAME}"
+          echo "Version : ${VERSION}"
+          echo "Tag     : ${TAG}"
+
+      - name: Check existing tag
+        id: check
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --tags origin \
+            "refs/tags/${{ steps.package.outputs.tag }}" >/dev/null 2>&1; then
+
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+
+            echo "::notice::Version ${{ steps.package.outputs.version }} already exists."
+
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        if: steps.check.outputs.exists == 'false'
+        run: cargo build --release --verbose
+
+      - name: Package
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          mkdir -p dist
+
+          cp target/release/${{ steps.package.outputs.name }} dist/
+
+          tar -czf \
+            "${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}-linux-x86_64.tar.gz" \
+            -C dist .
+
+      - name: Create Git tag
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag "${{ steps.package.outputs.tag }}"
+          git push origin "${{ steps.package.outputs.tag }}"
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.package.outputs.tag }}
+          name: Release ${{ steps.package.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}-linux-x86_64.tar.gz

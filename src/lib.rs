@@ -7,8 +7,7 @@ pub mod template;
 use crate::cli::{Cli, Commands};
 use crate::generator::{FileType, generate_file};
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     match cli.command {
         // cargo run -- gen --type=tsx --name=accounts
