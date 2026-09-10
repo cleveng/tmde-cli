@@ -1,0 +1,37 @@
+[package]
+name = "tmde-cli"
+version = "0.0.1"
+description = "tmde cli tools"
+authors = ["cleveng <cleveng@gmail.com>"]
+license = "MIT"
+edition = "2024"
+repository = ""
+rust-version = "1.92.0"
+
+[[bin]]
+name = "tmde"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1.0.219", features = ["derive"] }
+tokio = { version = "1.49.0", features = ["full"] }
+clap = { version = "4.5.54", features = ["derive"] }
+pluralizer = "0.5.0"
+heck = "0.5.0"
+
+tera = { version = "2.0.0", features = ["glob_fs"] }
+include_dir = "0.7.4"
+
+anyhow = "1.0.102"
+
+[build-dependencies]
+
+[profile.dev]
+incremental = true
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
