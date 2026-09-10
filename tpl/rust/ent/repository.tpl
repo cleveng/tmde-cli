@@ -5,7 +5,7 @@ use crate::{
 };
 
 use crate::handler::domains::<@ data.name @>::{
-    <@ data.capitalize_name @>, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOneOption, <@ data.capitalize_name @>sQueryInput, <@ data.capitalize_name @>sQueryOption,
+    <@ data.capitalize_name @>, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOneOption, <@ data.capitalize_name @>QueryInput, <@ data.capitalize_name @>QueryOption,
 };
 
 pub struct <@ data.capitalize_name @>Loader(pub AppState);

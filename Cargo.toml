@@ -1,6 +1,6 @@
 [package]
 name = "tmde-cli"
-version = "0.0.1"
+version = "0.0.2"
 description = "tmde cli tools"
 authors = ["cleveng <cleveng@gmail.com>"]
 license = "MIT"
