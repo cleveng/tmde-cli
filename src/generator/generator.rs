@@ -1,5 +1,3 @@
-use heck::ToUpperCamelCase;
-use pluralizer::pluralize;
 use std::fs;
 use std::path::Path;
 use tera::Context;
@@ -29,7 +27,6 @@ pub fn generate_file(
 
     // 1.0 创建文件夹
     let from_name = file_type.filename();
-    let extension = file_type.extension();
 
     let tera = build_tera()?;
     let template_paths = file_type.template_paths(target_arg.as_ref());
@@ -70,14 +67,8 @@ pub fn generate_file(
         // 自动创建目录
         fs::create_dir_all(&output_dir).unwrap();
 
-        // 开始封装模板数据
-        let capitalize_name = name.to_upper_camel_case(); // 首字母大写
-        let plural_name = pluralize(&capitalize_name, 2, false); // 首字母大写且复数
-
         let mut context = Context::new();
         context.insert("data", &tmde);
-        context.insert("plural_name", &plural_name);
-        context.insert("capitalize_name", &capitalize_name);
 
         let content = match tera.render(&template_name, &context) {
             Ok(v) => v,
@@ -85,6 +76,12 @@ pub fn generate_file(
                 println!("Failed to render {} template: {}", &template_name, err);
                 continue;
             }
+        };
+
+        let extension = if file_type == &FileType::Tsx && template_path.ends_with("index.tpl") {
+            "vue"
+        } else {
+            file_type.extension()
         };
 
         let output_path = output_dir.join(format!("{}.{}", filename, extension));

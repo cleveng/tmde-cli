@@ -2,6 +2,7 @@
     "cSpell.words": [
         "chrono",
         "pluralizer",
+        "Popconfirm",
         "reqwest",
         "rustls",
         "serde",

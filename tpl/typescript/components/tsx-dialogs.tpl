@@ -29,7 +29,7 @@ export default defineComponent({
                 setCurrentRow(null)
               }, 500)
             }}
-            currentRow={currentRow.value as API.<@ data.capitalize_name @>}
+            currentRow={currentRow.value as API.<@ data.pascal_case_name @>}
           />
         )}
       </>

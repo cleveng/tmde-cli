@@ -13,7 +13,7 @@ import {
 import { type SelectMixedOption } from 'naive-ui/es/select/src/interface'
 import { defineComponent, inject, reactive, type Ref, ref } from 'vue'
 
-import { type <@ data.capitalize_name @>Input, Create<@ data.capitalize_name @>Document } from '@/generated/graphql'
+import { type <@ data.pascal_case_name @>Input, Create<@ data.pascal_case_name @>Document } from '@/generated/graphql'
 import { type API } from '/#/api'
 import { extractErrorMessage } from '@/plugins'
 
@@ -38,6 +38,7 @@ export default defineComponent({
 
     const defaultParams = () => ({
       id: 0,
+      name: '',
       platform_type: 1
     })
 
@@ -62,7 +63,7 @@ export default defineComponent({
       props.onOpenChange(false)
     }
 
-    const { executeMutation: mutation, fetching } = useMutation(Create<@ data.capitalize_name @>Document)
+    const { executeMutation: mutation, fetching } = useMutation(Create<@ data.pascal_case_name @>Document)
 
     const formRef = ref<FormInst | null>(null)
     const onSubmit = async () => {
@@ -75,7 +76,7 @@ export default defineComponent({
         if (state.loading) return
         state.loading = true
 
-        const params: <@ data.capitalize_name @>Input = {
+        const params: <@ data.pascal_case_name @>Input = {
           ..state.params
         }
 
@@ -87,7 +88,7 @@ export default defineComponent({
             return
           }
 
-          if (res.data?.create<@ data.capitalize_name @>) {
+          if (res.data?.create<@ data.pascal_case_name @>) {
             message.success("提交成功")
             refetch?.()
           }

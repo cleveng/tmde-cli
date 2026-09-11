@@ -13,7 +13,7 @@ import {
 import { type SelectMixedOption } from 'naive-ui/es/select/src/interface'
 import { defineComponent, inject, reactive, type Ref, ref } from 'vue'
 
-import { type <@ data.capitalize_name @>Input, Update<@ data.capitalize_name @>Document } from '@/generated/graphql'
+import { type <@ data.pascal_case_name @>Input, Update<@ data.pascal_case_name @>Document } from '@/generated/graphql'
 import { type API } from '/#/api'
 import { extractErrorMessage } from '@/plugins'
 
@@ -29,7 +29,7 @@ export default defineComponent({
       required: true
     },
     currentRow: {
-      type: Object as PropType<API.<@ data.capitalize_name @>>,
+      type: Object as PropType<API.<@ data.pascal_case_name @>>,
       required: true
     }
   },
@@ -43,6 +43,7 @@ export default defineComponent({
     const defaultParams = () => ({
       id: props.currentRow?.id,
       name: props.currentRow?.name,
+      platform_type: 1,
     })
 
     const state = reactive({
@@ -66,7 +67,7 @@ export default defineComponent({
       props.onOpenChange(false)
     }
 
-    const { executeMutation: mutation, fetching } = useMutation(Update<@ data.capitalize_name @>Document)
+    const { executeMutation: mutation, fetching } = useMutation(Update<@ data.pascal_case_name @>Document)
 
     const formRef = ref<FormInst | null>(null)
     const onSubmit = async () => {
@@ -79,7 +80,7 @@ export default defineComponent({
         if (state.loading) return
         state.loading = true
 
-        const params: <@ data.capitalize_name @>Input = {
+        const params: <@ data.pascal_case_name @>Input = {
           ..state.params
         }
 
@@ -91,7 +92,7 @@ export default defineComponent({
             return
           }
 
-          if (res.data?.update<@ data.capitalize_name @>) {
+          if (res.data?.update<@ data.pascal_case_name @>) {
             message.success("提交成功")
             refetch?.()
             close()

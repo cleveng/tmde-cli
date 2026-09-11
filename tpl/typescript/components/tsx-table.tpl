@@ -2,7 +2,7 @@ import { useMutation } from '@urql/vue'
 import { NButton, NCheckbox, NPopconfirm, NSpace, NTable, useMessage } from 'naive-ui'
 import { defineComponent, inject, reactive, type Ref } from 'vue'
 
-import { Delete<@ data.capitalize_name @>Document } from '@/generated/graphql'
+import { Delete<@ data.pascal_case_name @>Document } from '@/generated/graphql'
 import { extractErrorMessage } from '@/plugins'
 
 import { use<@ data.capitalize_name @> } from './<@ data.name @>-provider'
@@ -13,7 +13,7 @@ export default defineComponent({
   name: '<@ data.capitalize_name @>Table',
   props: {
     <@ data.name @>: {
-      type: Array as PropType<API.<@ data.capitalize_name @>[]>,
+      type: Array as PropType<API.<@ data.pascal_case_name @>[]>,
       default: () => []
     }
   },
@@ -28,11 +28,11 @@ export default defineComponent({
 
     const refetch = inject<() => void>('refetch')
 
-    const todo = inject<Ref<string[]>>('todo')
+    const _todo = inject<Ref<string[]>>('todo')
 
-    const { executeMutation: mutation, fetching } = useMutation(Delete<@ data.capitalize_name @>Document)
+    const { executeMutation: mutation, fetching } = useMutation(Delete<@ data.pascal_case_name @>Document)
 
-    const onDelete = async (item: API.<@ data.capitalize_name @>) => {
+    const onDelete = async (item: API.<@ data.pascal_case_name @>) => {
       if (state.loading) return
       state.loading = true
 
@@ -44,7 +44,7 @@ export default defineComponent({
           return
         }
 
-        if (res.data?.delete<@ data.capitalize_name @>) {
+        if (res.data?.delete<@ data.pascal_case_name @>) {
           message.success("删除成功")
           refetch?.()
         }

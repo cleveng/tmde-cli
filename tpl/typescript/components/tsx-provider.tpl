@@ -7,8 +7,8 @@ type <@ data.capitalize_name @>DialogType = 'add' | 'edit' | 'delete' | null
 type <@ data.capitalize_name @>ContextType = {
   open: Ref<<@ data.capitalize_name @>DialogType | null>
   setOpen: (type: <@ data.capitalize_name @>DialogType) => void
-  currentRow: Ref<API.Account | null>
-  setCurrentRow: (row: API.Account | null) => void
+  currentRow: Ref<API.<@ data.pascal_case_name @> | null>
+  setCurrentRow: (row: API.<@ data.pascal_case_name @> | null) => void
 }
 
 export default defineComponent({
@@ -22,8 +22,8 @@ export default defineComponent({
     }
 
     // Current row state
-    const currentRow = ref<API.Account | null>(null)
-    const setCurrentRow = (row: API.Account | null) => {
+    const currentRow = ref<API.<@ data.pascal_case_name @> | null>(null)
+    const setCurrentRow = (row: API.<@ data.pascal_case_name @> | null) => {
       currentRow.value = row
     }
 

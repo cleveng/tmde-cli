@@ -20,7 +20,7 @@ const { fetching, data, executeQuery } = useQuery({
   requestPolicy: 'cache-and-network'
 })
 
-const todo = computed(() => string[])
+const todo = computed(() => [])
 provide('todo', todo)
 
 const refetch = async () => {
@@ -39,7 +39,7 @@ provide('refetch', refetch)
         <<@ data.capitalize_name @>PrimaryButton />
       </template>
       <n-spin :show="fetching">
-        <<@ data.capitalize_name @>Table :items="data?.<@ data.capitalize_name @> as unknown as API.<@ data.capitalize_name @>[]" />
+        <<@ data.capitalize_name @>Table :items="data?.<@ data.name @> as unknown as API.<@ data.pascal_case_name @>[]" />
       </n-spin>
     </n-card>
 
