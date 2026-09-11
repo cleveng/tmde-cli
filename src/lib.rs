@@ -4,7 +4,7 @@ pub mod cli;
 pub mod generator;
 pub mod template;
 
-use crate::cli::{Cli, Commands};
+use crate::cli::{Cli, Commands, upgrade};
 use crate::generator::{FileType, generate_file};
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -12,7 +12,6 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     match cli.command {
         // cargo run -- gen --type=tsx --name=accounts
         // cargo run -- gen tsx accounts ent
-        // cargo run -- gen rs accounts ent | gql // 是否支持尾巴参数
         Commands::Gen {
             file_type,
             name,
@@ -34,6 +33,8 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
             generate_file(&file_type, &name, target_arg, force)?;
         }
+        // cargo run -- upgrade
+        Commands::Upgrade {} => upgrade::run().await?,
     }
 
     Ok(())

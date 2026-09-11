@@ -36,4 +36,5 @@ pub enum Commands {
         #[arg(short = 'f', long = "force", default_value_t = false)]
         force: bool,
     },
+    Upgrade {},
 }
