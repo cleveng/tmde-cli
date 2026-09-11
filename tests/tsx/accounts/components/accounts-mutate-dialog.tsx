@@ -13,7 +13,7 @@ import {
 import { type SelectMixedOption } from 'naive-ui/es/select/src/interface'
 import { defineComponent, inject, reactive, type Ref, ref } from 'vue'
 
-import { type AccountsInput, UpdateAccountsDocument } from '@/generated/graphql'
+import { type AccountInput, UpdateAccountDocument } from '@/generated/graphql'
 import { type API } from '/#/api'
 import { extractErrorMessage } from '@/plugins'
 
@@ -29,7 +29,7 @@ export default defineComponent({
       required: true
     },
     currentRow: {
-      type: Object as PropType<API.Accounts>,
+      type: Object as PropType<API.Account>,
       required: true
     }
   },
@@ -43,6 +43,7 @@ export default defineComponent({
     const defaultParams = () => ({
       id: props.currentRow?.id,
       name: props.currentRow?.name,
+      platform_type: 1,
     })
 
     const state = reactive({
@@ -66,7 +67,7 @@ export default defineComponent({
       props.onOpenChange(false)
     }
 
-    const { executeMutation: mutation, fetching } = useMutation(UpdateAccountsDocument)
+    const { executeMutation: mutation, fetching } = useMutation(UpdateAccountDocument)
 
     const formRef = ref<FormInst | null>(null)
     const onSubmit = async () => {
@@ -79,7 +80,7 @@ export default defineComponent({
         if (state.loading) return
         state.loading = true
 
-        const params: AccountsInput = {
+        const params: AccountInput = {
           ..state.params
         }
 
@@ -91,7 +92,7 @@ export default defineComponent({
             return
           }
 
-          if (res.data?.updateAccounts) {
+          if (res.data?.updateAccount) {
             message.success("提交成功")
             refetch?.()
             close()

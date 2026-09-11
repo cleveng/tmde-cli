@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-vue-next'
 import { NButton, NIcon } from 'naive-ui'
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 
 import { useAccounts } from './accounts-provider'
 

@@ -29,7 +29,7 @@ export default defineComponent({
                 setCurrentRow(null)
               }, 500)
             }}
-            currentRow={currentRow.value as API.Accounts}
+            currentRow={currentRow.value as API.Account}
           />
         )}
       </>

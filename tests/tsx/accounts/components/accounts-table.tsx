@@ -2,7 +2,7 @@ import { useMutation } from '@urql/vue'
 import { NButton, NCheckbox, NPopconfirm, NSpace, NTable, useMessage } from 'naive-ui'
 import { defineComponent, inject, reactive, type Ref } from 'vue'
 
-import { DeleteAccountsDocument } from '@/generated/graphql'
+import { DeleteAccountDocument } from '@/generated/graphql'
 import { extractErrorMessage } from '@/plugins'
 
 import { useAccounts } from './accounts-provider'
@@ -13,7 +13,7 @@ export default defineComponent({
   name: 'AccountsTable',
   props: {
     accounts: {
-      type: Array as PropType<API.Accounts[]>,
+      type: Array as PropType<API.Account[]>,
       default: () => []
     }
   },
@@ -28,11 +28,11 @@ export default defineComponent({
 
     const refetch = inject<() => void>('refetch')
 
-    const todo = inject<Ref<string[]>>('todo')
+    const _todo = inject<Ref<string[]>>('todo')
 
-    const { executeMutation: mutation, fetching } = useMutation(DeleteAccountsDocument)
+    const { executeMutation: mutation, fetching } = useMutation(DeleteAccountDocument)
 
-    const onDelete = async (item: API.Accounts) => {
+    const onDelete = async (item: API.Account) => {
       if (state.loading) return
       state.loading = true
 
@@ -44,7 +44,7 @@ export default defineComponent({
           return
         }
 
-        if (res.data?.deleteAccounts) {
+        if (res.data?.deleteAccount) {
           message.success("删除成功")
           refetch?.()
         }
