@@ -77,7 +77,7 @@ export default defineComponent({
         state.loading = true
 
         const params: <@ data.pascal_case_name @>Input = {
-          ..state.params
+          ...state.params
         }
 
         try {

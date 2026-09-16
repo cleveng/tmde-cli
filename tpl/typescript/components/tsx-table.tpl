@@ -1,5 +1,5 @@
 import { useMutation } from '@urql/vue'
-import { NButton, NCheckbox, NPopconfirm, NSpace, NTable, useMessage } from 'naive-ui'
+import { NButton, NCheckbox, NPagination, NSpace, NTable, useDialog, useMessage } from 'naive-ui'
 import { defineComponent, inject, reactive, type Ref } from 'vue'
 
 import { Delete<@ data.pascal_case_name @>Document } from '@/generated/graphql'
@@ -12,12 +12,18 @@ import type { API } from '/#/api'
 export default defineComponent({
   name: '<@ data.capitalize_name @>Table',
   props: {
-    <@ data.name @>: {
-      type: Array as PropType<API.<@ data.pascal_case_name @>[]>,
-      default: () => []
+    result: {
+      type: Object as PropType<API.Page<API.<@ data.pascal_case_name @>>>,
+      required: true
+    },
+    loadMore: {
+      type: Function as PropType<(val: number) => void | Promise<void>>,
+      required: false,
+      default: () => {}
     }
   },
   setup(props) {
+    const dialog = useDialog()
     const message = useMessage()
 
     const { setOpen, setCurrentRow } = use<@ data.capitalize_name @>()
@@ -33,30 +39,39 @@ export default defineComponent({
     const { executeMutation: mutation, fetching } = useMutation(Delete<@ data.pascal_case_name @>Document)
 
     const onDelete = async (item: API.<@ data.pascal_case_name @>) => {
-      if (state.loading) return
-      state.loading = true
+      dialog.warning({
+        title: '是否删除?',
+        content: '删除后无法恢复，请谨慎操作',
+        positiveText: '确 认',
+        negativeText: '取 消',
+        draggable: true,
+        onPositiveClick: async () => {
+		      if (state.loading) return
+		      state.loading = true
 
-      try {
-        const res = await mutation({ id: item.id })
-        if (res.error) {
-          const title = extractErrorMessage(res.error)
-          message.error(title)
-          return
-        }
+		      try {
+		        const res = await mutation({ id: item.id })
+		        if (res.error) {
+		          const title = extractErrorMessage(res.error)
+		          message.error(title)
+		          return
+		        }
 
-        if (res.data?.delete<@ data.pascal_case_name @>) {
-          message.success("删除成功")
-          refetch?.()
+		        if (res.data?.delete<@ data.pascal_case_name @>) {
+		          message.success("删除成功")
+		          refetch?.()
+		        }
+		      } catch (error) {
+		        console.error(error)
+		      } finally {
+		        state.loading = false
+		      }
         }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        state.loading = false
-      }
+      })
     }
 
     return () => (
-      <>
+      <div class='w-full overflow-x-auto'>
         <NTable singleLine={false}>
           <thead>
             <tr>
@@ -74,7 +89,7 @@ export default defineComponent({
           <tbody>
             {props.<@ data.name @>?.length === 0 ? (
               <tr>
-                <td colspan='7'>
+                <td colspan={7}>
                   没有数据，请先添加
                 </td>
               </tr>
@@ -84,11 +99,11 @@ export default defineComponent({
                   <td>
                     <NCheckbox disabled />
                   </td>
-                  <td>{item.id}</td>
-                  <td>字段一</td>
-                  <td>字段二</td>
-                  <td>字段三</td>
-                  <td>字段四</td>
+                  <td class='whitespace-nowrap'>{item.id}</td>
+                  <td class='whitespace-nowrap'>字段一</td>
+                  <td class='whitespace-nowrap'>字段二</td>
+                  <td class='whitespace-nowrap'>字段三</td>
+                  <td class='whitespace-nowrap'>字段四</td>
                   <td>
                     <NSpace align='center'>
                       <NButton
@@ -100,20 +115,9 @@ export default defineComponent({
                       >
                         编 辑
                       </NButton>
-                      <NPopconfirm
-                        negativeText={null}
-                        positiveText="确 认"
-                        onPositiveClick={() => onDelete(item)}
-                      >
-                        {{
-                          trigger: () => (
-                            <NButton size='small' disabled={fetching.value} type='error'>
-                              删 除
-                            </NButton>
-                          ),
-                          default: () => "是否删除"
-                        }}
-                      </NPopconfirm>
+                      <NButton size='small' disabled={fetching.value} type='error' onClick={() => onDelete(item)}>
+                        删 除
+                      </NButton>
                     </NSpace>
                   </td>
                 </tr>
@@ -121,7 +125,25 @@ export default defineComponent({
             )}
           </tbody>
         </NTable>
-      </>
+
+        <NSpace class='mt-8 justify-between'>
+          <span class='text-base'>共有数据: 110 条</span>
+          {props.result.lastPage > 1 && (
+            <div class='flex justify-center'>
+              <NPagination
+                itemCount={props.result.total}
+                page={props.result.currentPage}
+                pageSize={props.result.perPage}
+                onUpdate:page={($event: number) => {
+                  if (props.loadMore) {
+                    props.loadMore($event)
+                  }
+                }}
+              />
+            </div>
+          )}
+        </NSpace>
+      </div>
     )
   }
 })
