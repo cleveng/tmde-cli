@@ -87,14 +87,14 @@ export default defineComponent({
             </tr>
           </thead>
           <tbody>
-            {props.<@ data.name @>?.length === 0 ? (
+            {props.result.data?.length === 0 ? (
               <tr>
                 <td colspan={7}>
                   没有数据，请先添加
                 </td>
               </tr>
             ) : (
-              props.<@ data.name @>?.map(item => (
+              props.result.data?.map(item => (
                 <tr key={item.id}>
                   <td>
                     <NCheckbox disabled />
@@ -127,7 +127,7 @@ export default defineComponent({
         </NTable>
 
         <NSpace class='mt-8 justify-between'>
-          <span class='text-base'>共有数据: 110 条</span>
+          <span class='text-base'>共有数据: {props.result.total} 条</span>
           {props.result.lastPage > 1 && (
             <div class='flex justify-center'>
               <NPagination
