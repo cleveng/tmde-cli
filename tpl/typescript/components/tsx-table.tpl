@@ -1,5 +1,5 @@
 import { useMutation } from '@urql/vue'
-import { NButton, NCheckbox, NPagination, NSpace, NTable, useDialog, useMessage } from 'naive-ui'
+import { NButton, NCheckbox, NEmpty, NPagination, NSpace, NTable, useDialog, useMessage } from 'naive-ui'
 import { defineComponent, inject, reactive, type Ref } from 'vue'
 
 import { Delete<@ data.pascal_case_name @>Document } from '@/generated/graphql'
@@ -90,7 +90,9 @@ export default defineComponent({
             {props.result.data?.length === 0 ? (
               <tr>
                 <td colspan={7}>
-                  没有数据，请先添加
+                  <div class='py-24 text-center'>
+                    <NEmpty description='暂无数据，请先添加' />
+                  </div>
                 </td>
               </tr>
             ) : (
