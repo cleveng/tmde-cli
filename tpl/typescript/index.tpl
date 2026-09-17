@@ -2,7 +2,7 @@
 import { useQuery } from '@urql/vue'
 import { Search, SlidersHorizontal } from 'lucide-vue-next'
 import { computed, ref, watch, provide, reactive } from 'vue'
-
+import { useMessage } from 'naive-ui'
 import { <@ data.capitalize_name @>Document, type <@ data.capitalize_name @>Query } from '@/generated/graphql'
 
 import <@ data.capitalize_name @>Dialogs from './components/<@ data.name @>-dialogs'
@@ -15,6 +15,8 @@ import type { API } from '/#/api'
 defineOptions({
   name: '<@ data.capitalize_name @>Index'
 })
+
+const message = useMessage()
 
 const defaultParams = () => ({
   machine_no: null as string | null,
@@ -85,6 +87,23 @@ watch(
   },
   { immediate: true, deep: true }
 )
+
+const validateInput = (input: string) => {
+  const value = input.trim()
+
+  if (!value) {
+    state.params.machine_no = null
+    return
+  }
+
+//  eg: 校验规则
+//  if (!isEmail(value)) {
+//    message.error('请输入正确的文本内容')
+//    return
+//  }
+
+  state.params.machine_no = value
+}
 </script>
 
 <template>
@@ -133,11 +152,12 @@ watch(
           <template #header-extra>
             <n-space :wrap="false" :size="12">
               <n-input
-                v-model:value="state.params.machine_no"
+                :default-value="state.params.machine_no"
                 size="large"
                 type="text"
                 clearable
-                placeholder=""
+                placeholder="请输入内容"
+                @update:value="validateInput"
               >
                 <template #prefix>
                   <n-icon :component="Search" />
