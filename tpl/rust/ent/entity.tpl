@@ -16,6 +16,7 @@ impl <@ data.capitalize_name @> {
     pub fn to_object(&self) -> <@ data.capitalize_name @>Object {
         <@ data.capitalize_name @>Object {
             id: self.id,
+            name: self.name,
         }
     }
 }
