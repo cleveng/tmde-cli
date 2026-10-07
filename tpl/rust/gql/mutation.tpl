@@ -4,7 +4,7 @@ use crate::{
     handler::domains::{
         LoggedInUser,
         <@ data.name @>::{
-            <@ data.capitalize_name @>, <@ data.capitalize_name @>Input, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOneOption,
+            <@ data.capitalize_name @>, <@ data.capitalize_name @>Input, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOption,
         },
     }
 };
@@ -53,6 +53,7 @@ impl <@ data.capitalize_name @>Mutation {
             updated_at: None,
             deleted_at: None,
             id: 0,
+            name: input.name.unwrap_or_default(),
         };
 
         if let Err(err) = loader.store(&data).await {
@@ -103,7 +104,8 @@ impl <@ data.capitalize_name @>Mutation {
         let app_state = ctx.data::<AppState>()?;
         let loader = <@ data.capitalize_name @>Loader::new(app_state.clone());
 
-        let record = match loader.first_by(&<@ data.capitalize_name @>QueryOneOption::Id(id)).await {
+				let option = <@ data.capitalize_name @>QueryOption::Id(id);
+        let record = match loader.first_by(&option).await {
             Ok(row) => row,
             Err(err) => {
                 log::error!("Failed to fetch <@ data.name @>: {err}");
@@ -112,6 +114,7 @@ impl <@ data.capitalize_name @>Mutation {
         };
 
         let data = <@ data.capitalize_name @> {
+            name: input.name.unwrap_or(record.name),
             ..record
         };
 
@@ -156,7 +159,8 @@ impl <@ data.capitalize_name @>Mutation {
         let app_state = ctx.data::<AppState>()?;
         let loader = <@ data.capitalize_name @>Loader::new(app_state.clone());
 
-        let record = match loader.first_by(&<@ data.capitalize_name @>QueryOneOption::Id(id)).await {
+        let option = <@ data.capitalize_name @>QueryOption::Id(id);
+        let record = match loader.first_by(&option).await {
             Ok(row) => row,
             Err(err) => {
                 log::error!("Failed to fetch <@ data.name @>: {err}");
@@ -164,7 +168,7 @@ impl <@ data.capitalize_name @>Mutation {
             }
         };
 
-        if let Err(err) = loader.delete(record.id).await {
+        if let Err(err) = loader.delete(&record).await {
             log::error!("Failed to delete <@ data.name @>: {err}");
             return Err(Error::new("Failed to delete <@ data.name @>"));
         }

@@ -3,6 +3,7 @@ mod loader;
 mod repository;
 
 pub use entity::{
-    <@ data.capitalize_name @>, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOneOption, <@ data.plural_name @>QueryInput, <@ data.plural_name @>QueryOption,
+    <@ data.capitalize_name @>, <@ data.capitalize_name @>Input, <@ data.capitalize_name @>Object,
+    <@ data.plural_name @>QueryInput, <@ data.capitalize_name @>QueryOption, <@ data.plural_name @>QueryOption,
 };
 pub use repository::<@ data.capitalize_name @>Loader;

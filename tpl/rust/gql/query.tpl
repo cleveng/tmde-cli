@@ -3,7 +3,8 @@ use crate::{
     handler::domains::{
         LoggedInUser,
         <@ data.name @>::{
-            <@ data.capitalize_name @>, <@ data.capitalize_name @>Input, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOneOption,
+            <@ data.capitalize_name @>, <@ data.capitalize_name @>Object, <@ data.capitalize_name @>Loader, <@ data.capitalize_name @>QueryOption,
+            <@ data.plural_name @>QueryInput, <@ data.plural_name @>QueryOption
         },
     }
 };
@@ -29,7 +30,7 @@ impl <@ data.capitalize_name @>Query {
     ///
     /// Returns a `Result` containing a vector of `<@ data.capitalize_name @>Object`s if successful,
     /// or an error if the operation fails.
-    pub async fn <@ data.plural_lower_name @>(&self, ctx: &Context<'_>) -> Result<Vec<<@ data.capitalize_name @>Object>, Error> {
+    pub async fn <@ data.plural_lower_name @>(&self, ctx: &Context<'_>, input: <@ data.plural_name @>QueryInput) -> Result<Vec<<@ data.capitalize_name @>Object>, Error> {
         let current_user = ctx
             .data::<LoggedInUser>()
             .map_err(|_| Error::new("You are not logged in"))?
@@ -42,14 +43,18 @@ impl <@ data.capitalize_name @>Query {
         let app_state = ctx.data::<AppState>()?;
         let loader = <@ data.capitalize_name @>Loader::new(app_state.clone());
 
-        let result = match loader.lists().await {
-            Ok(value) => value,
-            Err(err) => {
-                error!("Failed to get <@ data.plural_name @>: {err}");
-                return Err(Error::new("Failed to get <@ data.plural_name @>"));
-            }
+        let current_page: i64 = input.page.current_page.unwrap_or(1);
+        let limit: i64 = input.page.per_page.unwrap_or(20).clamp(20, 50);
+        let offset: i64 = (current_page - 1) * limit;
+
+        let option = <@ data.plural_name @>QueryOption {
+            id: None,
         };
 
+        let result: Vec<<@ data.capitalize_name @>> = loader
+            .lists(limit, offset, &option)
+            .await
+            .unwrap_or_default();
         let data: Vec<<@ data.capitalize_name @>Object> = result.into_iter().map(|v| v.to_object()).collect();
 
         Ok(data)
@@ -83,10 +88,11 @@ impl <@ data.capitalize_name @>Query {
         let app_state = ctx.data::<AppState>()?;
         let loader = <@ data.capitalize_name @>Loader::new(app_state.clone());
 
-        let result = match loader.first_by(&<@ data.capitalize_name @>QueryOneOption::Id(id)).await {
+        let option = <@ data.capitalize_name @>QueryOption::Id(id);
+        let result = match loader.first_by(&option).await {
             Ok(value) => value,
             Err(err) => {
-                error!("Failed to fetch <@ data.name @>: {err}");
+                log::error!("Failed to fetch <@ data.name @>: {err}");
                 return Err(Error::new("Failed to fetch <@ data.name @>"));
             }
         };
