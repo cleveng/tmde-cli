@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use async_graphql::dataloader::Loader;
 
 use crate::handler::domains::account::{
-    Account, AccountLoader, AccountQueryOneOption, AccountsQueryInput, AccountsQueryOption
+    Account, AccountLoader, AccountQueryOption
 };
 
 impl Loader<u64> for AccountLoader {
@@ -11,7 +11,7 @@ impl Loader<u64> for AccountLoader {
     type Error = Arc<sqlx::Error>;
 
     async fn load(&self, keys: &[u64]) -> Result<HashMap<u64, Self::Value>, Self::Error> {
-        let option = AccountQueryOneOption::Id(keys[0]);
+        let option = AccountQueryOption::Id(keys[0]);
         let data = match self.first_by(&option).await {
             Ok(data) => data,
             Err(e) => {

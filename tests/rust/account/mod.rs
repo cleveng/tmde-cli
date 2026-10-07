@@ -3,6 +3,7 @@ mod loader;
 mod repository;
 
 pub use entity::{
-    Account, AccountLoader, AccountQueryOneOption, AccountsQueryInput, AccountsQueryOption,
+    Account, AccountInput, AccountObject,
+    AccountsQueryInput, AccountQueryOption, AccountsQueryOption,
 };
 pub use repository::AccountLoader;
