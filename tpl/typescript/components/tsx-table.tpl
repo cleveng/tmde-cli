@@ -46,26 +46,26 @@ export default defineComponent({
         negativeText: '取 消',
         draggable: true,
         onPositiveClick: async () => {
-		      if (state.loading) return
-		      state.loading = true
+          if (state.loading) return
+          state.loading = true
 
-		      try {
-		        const res = await mutation({ id: item.id })
-		        if (res.error) {
-		          const title = extractErrorMessage(res.error)
-		          message.error(title)
-		          return
-		        }
+          try {
+            const res = await mutation({ id: item.id })
+            if (res.error) {
+              const title = extractErrorMessage(res.error)
+              message.error(title)
+              return
+            }
 
-		        if (res.data?.delete<@ data.pascal_case_name @>) {
-		          message.success("删除成功")
-		          refetch?.()
-		        }
-		      } catch (error) {
-		        console.error(error)
-		      } finally {
-		        state.loading = false
-		      }
+            if (res.data?.delete<@ data.pascal_case_name @>) {
+              message.success("删除成功")
+              refetch?.()
+            }
+          } catch (error) {
+            console.error(error)
+          } finally {
+            state.loading = false
+          }
         }
       })
     }

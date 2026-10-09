@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from '@urql/vue'
 import { Search, SlidersHorizontal } from 'lucide-vue-next'
-import { computed, ref, watch, provide, reactive } from 'vue'
 import { useMessage } from 'naive-ui'
+import { computed, ref, watch, provide, reactive } from 'vue'
+
 import { <@ data.capitalize_name @>Document, type <@ data.capitalize_name @>Query } from '@/generated/graphql'
 
 import <@ data.capitalize_name @>Dialogs from './components/<@ data.name @>-dialogs'
@@ -16,7 +17,7 @@ defineOptions({
   name: '<@ data.capitalize_name @>Index'
 })
 
-const message = useMessage()
+const _message = useMessage()
 
 const defaultParams = () => ({
   machine_no: null as string | null,
@@ -47,10 +48,10 @@ const { fetching, data, executeQuery } = useQuery({
 
 const options = computed(() => {
   return [
-  	{
-	    label: 'label',
-	    value: 1,
-	    disabled: true
+    {
+      label: 'label',
+      value: 1,
+      disabled: true
     }
   ]
 })
@@ -209,7 +210,7 @@ const validateInput = (input: string) => {
             </n-space>
           </template>
           <n-spin :show="fetching">
-        	  <<@ data.capitalize_name @>Table :result="state.result" :load-more="loadMore" />
+            <<@ data.capitalize_name @>Table :result="state.result" :load-more="loadMore" />
           </n-spin>
         </n-card>
       </div>

@@ -1,17 +1,19 @@
 import { useMutation } from '@urql/vue'
 import {
   type FormInst,
+  NAlert,
   NForm,
   NFormItem,
   NInput,
   NModal,
+  NPageHeader,
   NSelect,
   NSpace,
   NButton,
   useMessage
 } from 'naive-ui'
 import { type SelectMixedOption } from 'naive-ui/es/select/src/interface'
-import { defineComponent, inject, reactive, type Ref, ref } from 'vue'
+import { computed, defineComponent, inject, reactive, type Ref, ref } from 'vue'
 
 import { type <@ data.pascal_case_name @>Input, Create<@ data.pascal_case_name @>Document } from '@/generated/graphql'
 import { type API } from '/#/api'
@@ -34,7 +36,7 @@ export default defineComponent({
 
     const refetch = inject<() => void>('refetch')
 
-    const todo = inject<Ref<string[]>>('todo')
+    const _todo = inject<Ref<string[]>>('todo')
 
     const defaultParams = () => ({
       id: 0,
@@ -45,6 +47,17 @@ export default defineComponent({
     const state = reactive({
       params: defaultParams(),
       loading: false
+    })
+
+		// select options
+    const options = computed(()=> {
+			return [
+				{
+					id: 0,
+					label: '占位符',
+					value: 1,
+				}
+			] as SelectMixedOption[]
     })
 
     const rules = reactive({
@@ -103,7 +116,6 @@ export default defineComponent({
     return () => (
       <NModal
         preset='dialog'
-        title="表单占位标题"
         class='max-h-160 w-full overflow-y-auto sm:w-11/12 md:max-w-(--breakpoint-lg)'
         show={props.open}
         show-icon={false}
@@ -112,8 +124,10 @@ export default defineComponent({
       >
         {{
           default: () => (
-            <>
-              <p class='mb-5 text-gray-400'>表单占位标题</p>
+            <NPageHeader title="弹窗占位标题">
+              <NAlert class='mb-5' bordered={false} type='info'>
+                提示占位标题
+              </NAlert>
               <NForm
                 ref={formRef}
                 class='space-y-1'
@@ -144,15 +158,16 @@ export default defineComponent({
                     size='large'
                     label-field='name'
                     value-field='id'
-                    options={todo?.value as SelectMixedOption[]}
+                    options={options?.value}
                   />
                 </NFormItem>
               </NForm>
-            </>
+            </NPageHeader>
           ),
           action: () => (
             <NSpace justify='end'>
               <NButton
+                size='large'
                 disabled={fetching.value}
                 loading={fetching.value}
                 onClick={close}
@@ -160,6 +175,8 @@ export default defineComponent({
                 取 消
               </NButton>
               <NButton
+                size='large'
+                type='primary'
                 disabled={fetching.value}
                 loading={fetching.value}
                 onClick={onSubmit}
