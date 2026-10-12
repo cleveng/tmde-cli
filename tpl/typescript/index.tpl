@@ -76,7 +76,7 @@ provide('todo', todo)
 watch(
   data,
   async (values: <@ data.capitalize_name @>Query) => {
-    state.result = (values?.<@ data.name @> as unknown as API.Page<API.<@ data.capitalize_name @>>) ?? {
+    state.result = (values?.<@ data.name @> as unknown as API.Page<API.<@ data.pascal_case_name @>>) ?? {
       total: 0,
       currentPage: 1,
       lastPage: 0,
