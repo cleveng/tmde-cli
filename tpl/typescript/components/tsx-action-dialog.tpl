@@ -18,6 +18,7 @@ import { computed, defineComponent, inject, reactive, type Ref, ref } from 'vue'
 import { type <@ data.pascal_case_name @>Input, Create<@ data.pascal_case_name @>Document } from '@/generated/graphql'
 import { type API } from '/#/api'
 import { extractErrorMessage } from '@/plugins'
+import { hmacSha256Signer } from '@/utils/signer'
 
 export default defineComponent({
   name: '<@ data.capitalize_name @>ActionDialog',
@@ -89,12 +90,16 @@ export default defineComponent({
         if (state.loading) return
         state.loading = true
 
-        const params: <@ data.pascal_case_name @>Input = {
-          ...state.params
-        }
+        const rest = { ..state.params }
 
         try {
-          const res = await mutation({ input: params })
+          const signed = hmacSha256Signer.sign(rest) as {
+            timestamp: number
+            sign: string
+          }
+          const params = { ...rest, ...signed }
+
+          const res = await mutation({ input })
           if (res.error) {
             const title = extractErrorMessage(res.error)
             message.error(title)

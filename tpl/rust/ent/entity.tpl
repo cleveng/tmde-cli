@@ -30,10 +30,12 @@ impl <@ data.capitalize_name @> {
     }
 }
 
-#[derive(Debug, InputObject)]
+#[derive(Debug, InputObject, Serialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct <@ data.capitalize_name @>Input {
     pub name: Option<String>,
+    pub timestamp: i64,               // 时间戳
+    pub sign: String,                 // 签名
 }
 
 #[derive(Debug, SimpleObject)]

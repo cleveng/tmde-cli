@@ -93,11 +93,15 @@ export default defineComponent({
         if (state.loading) return
         state.loading = true
 
-        const params: <@ data.pascal_case_name @>Input = {
-          ...state.params
-        }
+        const rest = { ...state.params }
 
         try {
+          const signed = hmacSha256Signer.sign(rest) as {
+            timestamp: number
+            sign: string
+          }
+          const params = { ...rest, ...signed }
+
           const res = await mutation({ id: props.currentRow.id, input: params })
           if (res.error) {
             const title = extractErrorMessage(res.error)

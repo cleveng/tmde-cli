@@ -1,4 +1,4 @@
-
+use crate::middleware::AppKey;
 use crate::{
     AppState,
     handler::domains::{
@@ -8,7 +8,9 @@ use crate::{
         },
     }
 };
+
 use async_graphql::{Context, Error, Object};
+use hmac_signer::{HmacSha256Signer, HmacSha256SignerTrait};
 
 #[derive(Default)]
 pub struct <@ data.capitalize_name @>Mutation;
@@ -36,11 +38,26 @@ impl <@ data.capitalize_name @>Mutation {
         ctx: &Context<'_>,
         input: <@ data.capitalize_name @>Input,
     ) -> Result<String, Error> {
+        // 校验签名开始
+        let appid = ctx
+            .data::<AppKey>()
+            .map_err(|_| Error::new("appid is required".to_string()))?
+            .0
+            .to_string();
+
+        let signer = HmacSha256Signer::new(&appid);
+        if let Err(err) = signer.verify(&input, input.timestamp, &input.sign, Some(10)) {
+            log::error!("Failed to verify sign: {err}");
+            return Err(Error::new("verify sign error".to_string()));
+        };
+        // 校验签名结束
+
         let current_user = ctx
             .data::<LoggedInUser>()
             .map_err(|_| Error::new("You are not logged in"))?
             .0
             .clone();
+
         if !current_user.is_root() {
             return Err(Error::new("You are not permission to action"));
         }
@@ -97,6 +114,21 @@ impl <@ data.capitalize_name @>Mutation {
             .map_err(|_| Error::new("You are not logged in"))?
             .0
             .clone();
+
+        // 校验签名开始
+        let appid = ctx
+            .data::<AppKey>()
+            .map_err(|_| Error::new("appid is required".to_string()))?
+            .0
+            .to_string();
+
+        let signer = HmacSha256Signer::new(&appid);
+        if let Err(err) = signer.verify(&input, input.timestamp, &input.sign, Some(10)) {
+            log::error!("Failed to verify sign: {err}");
+            return Err(Error::new("verify sign error".to_string()));
+        };
+        // 校验签名结束
+
         if !current_user.is_root() {
             return Err(Error::new("You are not permission to action"));
         }
